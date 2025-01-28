@@ -1,6 +1,9 @@
 import { Droppable } from "@hello-pangea/dnd";
+import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import DraggableCard from "./DraggableCard";
+import { IToDo, toDoState } from "../atom";
+import { useSetRecoilState } from "recoil";
 
 const Wrapper = styled.div`
     width: 300px;
@@ -38,20 +41,54 @@ const Area = styled.div<IAreaProps>`
             : "none"}; // Add a dashed border for emphasis
 `;
 
+const Form = styled.form`
+    width: 100%;
+    input {
+        width: 100%;
+    }
+`;
+
 interface IAreaProps {
     isDraggingFromThis: boolean;
     isDraggingOver: boolean;
 }
 
 interface IBoardProps {
-    toDos: string[];
+    toDos: IToDo[];
     boardId: string;
 }
 
+interface IForm {
+    toDo: string;
+}
+
 function Board({ toDos, boardId }: IBoardProps) {
+    const setToDos = useSetRecoilState(toDoState);
+    const { register, setValue, handleSubmit } = useForm<IForm>();
+    const onValid = ({ toDo }: IForm) => {
+        const newToDo = {
+            id: Date.now(),
+            text: toDo,
+        };
+        setToDos((allBoards) => {
+            return {
+                ...allBoards,
+                [boardId]: [...allBoards[boardId], newToDo], //e.g. "Doing": [...allBoards["Doing"], newToDo]
+            };
+        });
+        setValue("toDo", "");
+    };
+
     return (
         <Wrapper>
             <Title>{boardId}</Title>
+            <Form onSubmit={handleSubmit(onValid)}>
+                <input
+                    {...register("toDo", { required: true })}
+                    type='text'
+                    placeholder={`Add task on ${boardId}`}
+                ></input>
+            </Form>
             <Droppable droppableId={boardId}>
                 {(magic, snapshot) => (
                     <Area
@@ -64,9 +101,10 @@ function Board({ toDos, boardId }: IBoardProps) {
                     >
                         {toDos.map((toDo, index) => (
                             <DraggableCard
-                                key={toDo}
+                                key={toDo.id}
                                 index={index}
-                                toDo={toDo}
+                                toDoId={toDo.id}
+                                toDoText={toDo.text}
                             />
                         ))}
                         {magic.placeholder}
