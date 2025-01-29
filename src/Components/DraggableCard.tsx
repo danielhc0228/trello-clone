@@ -1,6 +1,7 @@
 import { Draggable } from "@hello-pangea/dnd";
 import styled from "styled-components";
 import { memo } from "react";
+import { useState } from "react";
 
 const Card = styled.div<{ isDragging: boolean }>`
     border-radius: 8px; // Uniform border-radius
@@ -18,15 +19,57 @@ const Card = styled.div<{ isDragging: boolean }>`
         props.theme.cardTextColor || "#555"}; // Text color for readability
     border: 1px solid #ddd; // Light border for subtle separation
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+`;
+
+const ButtonGroup = styled.div`
+    display: flex;
+    gap: 5px;
+`;
+
+const EditButton = styled.button`
+    background: #feca57;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 3px;
+`;
+
+const DeleteButton = styled.button`
+    background: #ff6b6b;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 3px;
 `;
 
 interface IDraggableCardProps {
     toDoId: number;
     toDoText: string;
     index: number;
+    onDelete: (id: number) => void;
+    onEdit: (id: number, newText: string) => void;
 }
 
-function DraggableCard({ toDoId, toDoText, index }: IDraggableCardProps) {
+function DraggableCard({
+    toDoId,
+    toDoText,
+    index,
+    onDelete,
+    onEdit,
+}: IDraggableCardProps) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [newText, setNewText] = useState(toDoText);
+
+    const handleEdit = () => {
+        if (isEditing) {
+            onEdit(toDoId, newText); // Save changes
+        }
+        setIsEditing(!isEditing); // Toggle edit mode
+    };
+
     return (
         <Draggable draggableId={toDoId + ""} index={index}>
             {(magic, snapshot) => (
@@ -36,7 +79,25 @@ function DraggableCard({ toDoId, toDoText, index }: IDraggableCardProps) {
                     {...magic.dragHandleProps}
                     {...magic.draggableProps}
                 >
-                    {toDoText}
+                    {isEditing ? (
+                        <input
+                            type='text'
+                            value={newText}
+                            onChange={(e) => setNewText(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleEdit()} // Save on Enter key
+                            autoFocus
+                        />
+                    ) : (
+                        <span>{toDoText}</span>
+                    )}
+                    <ButtonGroup>
+                        <EditButton onClick={handleEdit}>
+                            {isEditing ? "✅" : "✏️"}
+                        </EditButton>
+                        <DeleteButton onClick={() => onDelete(toDoId)}>
+                            ❌
+                        </DeleteButton>
+                    </ButtonGroup>
                 </Card>
             )}
         </Draggable>

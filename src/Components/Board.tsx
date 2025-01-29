@@ -78,6 +78,35 @@ function Board({ toDos, boardId }: IBoardProps) {
         });
         setValue("toDo", "");
     };
+    function handleDelete(toDoId: number) {
+        setToDos((allBoards) => {
+            const updatedBoards = Object.keys(allBoards).reduce(
+                (acc, boardId) => {
+                    acc[boardId] = allBoards[boardId].filter(
+                        (task) => task.id !== toDoId
+                    );
+                    return acc;
+                },
+                {} as typeof allBoards
+            );
+            return updatedBoards;
+        });
+    }
+
+    function handleEdit(toDoId: number, newText: string) {
+        setToDos((allBoards) => {
+            const updatedBoards = Object.keys(allBoards).reduce(
+                (acc, boardId) => {
+                    acc[boardId] = allBoards[boardId].map((task) =>
+                        task.id === toDoId ? { ...task, text: newText } : task
+                    );
+                    return acc;
+                },
+                {} as typeof allBoards
+            );
+            return updatedBoards;
+        });
+    }
 
     return (
         <Wrapper>
@@ -105,6 +134,8 @@ function Board({ toDos, boardId }: IBoardProps) {
                                 index={index}
                                 toDoId={toDo.id}
                                 toDoText={toDo.text}
+                                onDelete={handleDelete}
+                                onEdit={handleEdit}
                             />
                         ))}
                         {magic.placeholder}
