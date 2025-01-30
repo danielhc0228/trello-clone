@@ -19,11 +19,24 @@ const Wrapper = styled.div`
 `;
 
 const Title = styled.h2`
-    text-align: center;
+    display: flex;
+    justify-content: space-between; /* Pushes title to left and button to right */
+    align-items: center; /* Vertically center the items */
     font-weight: 600;
     margin-bottom: 15px;
     font-size: 20px;
-    color: "#333"; // Darker gray for contrast
+    color: #ecf0f1; /* Darker gray for contrast */
+    width: 100%; /* Ensure it takes up the full width */
+`;
+
+const DeleteButton = styled.button`
+    background: transparent;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 16px;
+    margin-left: 10px; /* Optional: Space between the title and the button */
 `;
 
 const Area = styled.div<IAreaProps>`
@@ -108,9 +121,23 @@ function Board({ toDos, boardId }: IBoardProps) {
         });
     }
 
+    function handleDeleteBoard(boardId: string) {
+        setToDos((allBoards) => {
+            const updatedBoards = { ...allBoards };
+            delete updatedBoards[boardId];
+            return updatedBoards;
+        });
+    }
+
     return (
         <Wrapper>
-            <Title>{boardId}</Title>
+            <Title>
+                {boardId}
+                <DeleteButton onClick={() => handleDeleteBoard(boardId)}>
+                    ❌
+                </DeleteButton>
+            </Title>
+
             <Form onSubmit={handleSubmit(onValid)}>
                 <input
                     {...register("toDo", { required: true })}

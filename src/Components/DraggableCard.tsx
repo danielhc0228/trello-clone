@@ -9,15 +9,15 @@ const Card = styled.div<{ isDragging: boolean }>`
     padding: 12px;
     background-color: ${(props) =>
         props.isDragging
-            ? "#f0f9ff"
-            : "#ffffff"}; // Light blue for dragging state
+            ? "rgb(86, 130, 177)"
+            : "#2C3E50 "}; // Light blue for dragging state
     box-shadow: ${(props) =>
         props.isDragging
             ? "0px 4px 8px rgba(0, 0, 0, 0.15)" // More noticeable shadow when dragging
             : "0px 2px 4px rgba(0, 0, 0, 0.05)"}; // Subtle shadow for non-dragging
     color: ${(props) =>
-        props.theme.cardTextColor || "#555"}; // Text color for readability
-    border: 1px solid #ddd; // Light border for subtle separation
+        props.theme.cardTextColor || "#BDC3C7 "}; // Text color for readability
+    border: 1px solid #2c3e50; // Light border for subtle separation
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     display: flex;
     justify-content: space-between;
@@ -30,7 +30,7 @@ const ButtonGroup = styled.div`
 `;
 
 const EditButton = styled.button`
-    background: #feca57;
+    background: transparent;
     border: none;
     padding: 5px;
     cursor: pointer;
@@ -38,7 +38,7 @@ const EditButton = styled.button`
 `;
 
 const DeleteButton = styled.button`
-    background: #ff6b6b;
+    background: transparent;
     border: none;
     padding: 5px;
     cursor: pointer;

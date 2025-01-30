@@ -1,30 +1,10 @@
-import {
-    DragDropContext,
-    Droppable,
-    DropResult,
-    Draggable,
-} from "@hello-pangea/dnd";
+import { DragDropContext, DropResult } from "@hello-pangea/dnd";
 import { useRecoilState } from "recoil";
-import styled from "styled-components";
 import { toDoState } from "./atom";
-import Board from "./Components/Board";
 import TrashCan from "./Components/TrashCan";
-
-const BoardsWrapper = styled.div`
-    display: flex;
-    width: 100vw;
-    margin: 0 auto;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-`;
-const BoardWrapper = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    width: 100%;
-    gap: 10px;
-`;
+import Trello from "./Components/Trello";
+import CreateBoard from "./Components/CreateBoard";
+import styled from "styled-components";
 
 function App() {
     const [toDos, setToDos] = useRecoilState(toDoState);
@@ -102,43 +82,48 @@ function App() {
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable
-                droppableId='all-boards'
-                direction='horizontal'
-                type='BOARD'
-            >
-                {(provided) => (
-                    <BoardsWrapper
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                    >
-                        {Object.keys(toDos).map((boardId, index) => (
-                            <Draggable
-                                key={boardId}
-                                draggableId={boardId}
-                                index={index}
-                            >
-                                {(magic) => (
-                                    <BoardWrapper
-                                        ref={magic.innerRef}
-                                        {...magic.dragHandleProps}
-                                        {...magic.draggableProps}
-                                    >
-                                        <Board
-                                            toDos={toDos[boardId]}
-                                            boardId={boardId}
-                                        />
-                                    </BoardWrapper>
-                                )}
-                            </Draggable>
-                        ))}
-                        {provided.placeholder}
-                    </BoardsWrapper>
-                )}
-            </Droppable>
-            <TrashCan />
+            <Container>
+                <Header>Trello Clone</Header>
+                <CreateBoard />
+                <Trello toDos={toDos} />
+                <TrashWrapper>
+                    <TrashCan />
+                </TrashWrapper>
+            </Container>
         </DragDropContext>
     );
 }
 
 export default App;
+
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+    background-color: #34495e;
+    padding: 20px;
+    gap: 20px;
+    overflow: hidden;
+`;
+
+const Header = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 0;
+    background-color: #2c3e50;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const TrashWrapper = styled.div`
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+`;
